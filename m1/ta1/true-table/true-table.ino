@@ -18,8 +18,6 @@ void loop() {
   int B = digitalRead(buttonB);
   int C = digitalRead(buttonC);
 
-  pinMode(buttonB, INPUT_PULLUP);
-  //  
   int F = (A && B && C) || (!A && B) || (!B && C);
   
 
@@ -29,6 +27,7 @@ void loop() {
   } else {
     digitalWrite(ledPin, LOW);  
     Serial.println("F = 0");
+//    delay(1500);
   }
-  delay(250);
+
 }
