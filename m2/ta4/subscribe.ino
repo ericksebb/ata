@@ -6,9 +6,10 @@
 const int lightPin = 2;
 const int buzzerPin = 4;
 
-const char* ssid = "your_SSID";
-const char* password = "your_PASSWORD";
-const char* mqtt_server = "your_MQTT_BROKER_IP";
+const char* ssid = "Pinguinos_de_Madagascar";
+const char* password = "Paligienco.2023";
+const char* mqtt_server = "broker.emqx.io";
+const int port = 1883;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -21,7 +22,7 @@ void setup() {
 
   Serial.begin(115200);
   setup_wifi();
-  client.setServer(mqtt_server, 1883);
+  client.setServer(mqtt_server, port);
   client.setCallback(callback);
 }
 
@@ -60,8 +61,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
     digitalWrite(lightPin, LOW);
   } else if (message == "Movement detected") {
     digitalWrite(buzzerPin, HIGH);
-    delay(1000); // Beep for 1 second
+    delay(1000); 
     digitalWrite(buzzerPin, LOW);
+  } else if (message == "Door opened" || message == "Door closed") {
+    for(int i = 0; i < 5; i++) {
+      digitalWrite(buzzerPin, HIGH);
+      delay(150);
+      digitalWrite(buzzerPin, LOW);
+      delay(150);
+    }
+    
   }
 }
 

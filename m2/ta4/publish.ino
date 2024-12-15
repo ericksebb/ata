@@ -6,9 +6,10 @@
 const int ldrPin = 39;
 const int trigger = 23;
 const int echo = 21;
+const int magnetic = 34;
 
-const char* ssid = "Pinguinos_de_Madagascar";
-const char* password = "Paligienco.2023";
+const char* ssid = "Suda";
+const char* password = "";
 const char* mqtt_server = "broker.emqx.io";
 
 WiFiClient espClient;
@@ -62,6 +63,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
+  pinMode(magnetic, INPUT);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
 }
@@ -79,8 +81,6 @@ void loop() {
   Serial.print(" || ");
   Serial.println(value1);
 
-
-  
   static bool lightsOn = false;
 
   if (percentage > 50 && lightsOn) {
@@ -122,6 +122,23 @@ void loop() {
   }
 
   prevDistance = distance;
+
+  int magneticValue = digitalRead(magnetic);
+  bool magneticState = false;
+
+  if (magneticValue == HIGH && !magneticState) {
+    snprintf(msg, MSG_BUFFER_SIZE, "Door opened");
+    Serial.print("Publish message: ");
+    Serial.println(msg);
+    client.publish("output/dustsensors", msg);
+    magneticState = true;
+  } else if (magneticValue == LOW && magneticState) {
+    snprintf(msg, MSG_BUFFER_SIZE, "Door closed");
+    Serial.print("Publish message: ");
+    Serial.println(msg);
+    client.publish("output/dustsensors", msg);
+    magneticState = false;
+  }
 
   delay(5000);
 }
